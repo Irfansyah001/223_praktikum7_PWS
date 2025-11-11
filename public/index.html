@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>API Key Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google Font (opsional, bisa dihapus kalau tidak perlu internet) -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-card: rgba(15, 23, 42, 0.9);
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.2);
+      --accent-2: #38bdf8;
+      --border-subtle: rgba(148, 163, 184, 0.5);
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --danger: #f97373;
+      --radius-xl: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #4ade80, #22c55e, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0b1120;
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+    }
+
+    .brand-title {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      font-size: 14px;
+      color: var(--text-soft);
+      text-transform: uppercase;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.8);
+      padding: 26px 26px 24px;
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0 0, rgba(34, 197, 94, 0.2), transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.2), transparent 45%);
+      opacity: 0.9;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .title-group h1 {
+      font-size: 22px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-live {
+      font-size: 11px;
+      text-transform: uppercase;
+      padding: 2px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-soft);
+      color: var(--accent-2);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .badge-live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .title-group p {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--text-soft);
+      max-width: 410px;
+    }
+
+    .summary {
+      text-align: right;
+      min-width: 180px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      letter-spacing: 0.09em;
+      margin-bottom: 6px;
+    }
+
+    .summary-value {
+      font-size: 14px;
+    }
+
+    .summary-highlight {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .summary-progress {
+      margin-top: 8px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(30, 64, 175, 0.7);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .summary-progress-fill {
+      position: absolute;
+      inset: 0;
+      width: 36%;
+      background: linear-gradient(to right, var(--accent-2), var(--accent));
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 860px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .summary {
+        text-align: left;
+      }
+
+      .card-header {
+        flex-direction: column;
+      }
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input,
+    .select {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.85);
+      padding: 9px 13px;
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .input::placeholder {
+      color: #64748b;
+    }
+
+    .input:focus,
+    .select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .pill-toggle {
+      border-radius: 999px;
+      font-size: 11px;
+      padding: 4px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-soft);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, border 0.15s ease, color 0.15s ease;
+    }
+
+    .pill-toggle input {
+      display: none;
+    }
+
+    .pill-toggle span {
+      font-size: 10px;
+    }
+
+    .pill-toggle[data-active="true"] {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .inline {
+      display: flex;
+      gap: 10px;
+    }
+
+    .inline > .field {
+      flex: 1;
+    }
+
+    .helper {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-top: 3px;
+    }
+
+    .helper strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .divider {
+      border-top: 1px dashed rgba(148, 163, 184, 0.5);
+      margin: 14px 0 10px;
+    }
+
+    .btn-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #0b1120;
+      background: linear-gradient(135deg, var(--accent), #a3e635);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow:
+        0 12px 25px rgba(34, 197, 94, 0.5),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 5px 12px rgba(34, 197, 94, 0.45),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
+    }
+
+    .btn-secondary {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-soft);
+      padding: 9px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.1s ease, border 0.1s ease, color 0.1s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(30, 64, 175, 0.5);
+      border-color: var(--accent-2);
+      color: var(--accent-2);
+    }
+
+    .btn-icon-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .status-text {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-left: auto;
+    }
+
+    .status-text[data-status="success"] {
+      color: var(--accent);
+    }
+
+    .status-text[data-status="error"] {
+      color: var(--danger);
+    }
+
+    /* Right Pane: Result + Activity */
+    .pane-right {
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.2), transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.2), transparent 50%),
+        rgba(15, 23, 42, 0.92);
+      padding: 16px 14px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pane-right h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .chip {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: var(--accent-2);
+      background: rgba(15, 23, 42, 0.75);
+    }
+
+    .result-box {
+      border-radius: 12px;
+      border: 1px dashed rgba(148, 163, 184, 0.9);
+      padding: 10px 10px 9px;
+      background: rgba(15, 23, 42, 0.95);
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .result-label {
+      font-size: 11px;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .result-key-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .result-key {
+      flex: 1;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: var(--accent);
+      overflow-wrap: anywhere;
+    }
+
+    .result-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .result-meta span strong {
+      color: var(--accent-2);
+      font-weight: 500;
+    }
+
+    .activity {
+      margin-top: 10px;
+    }
+
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .activity-list {
+      max-height: 120px;
+      overflow: hidden;
+      padding-right: 2px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 11px;
+      padding: 4px 2px;
+    }
+
+    .activity-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      margin-top: 4px;
+      background: rgba(148, 163, 184, 0.9);
+    }
+
+    .activity-item.success .activity-dot {
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .activity-item time {
+      display: block;
+      color: var(--text-soft);
+      font-size: 10px;
+      margin-top: 1px;
+    }
+
+    .activity-item span {
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="brand">
+      <div class="brand-logo">K</div>
+      <div>
+        <div class="brand-title">KeyVault • Developer Console</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-inner">
+        <header class="card-header">
+          <div class="title-group">
+            <h1>
+              API Key Generator
+              <span class="badge-live">
+                <span class="badge-live-dot"></span>
+                Secure mode
+              </span>
+            </h1>
+            <p>
+              Buat dan kelola API key untuk aplikasi kamu dalam satu tempat.
+              Atur nama aplikasi, scope akses, dan masa berlaku dengan aman.
+            </p>
+          </div>
+          <div class="summary">
+            <div class="summary-label">Usage Snapshot</div>
+            <div class="summary-value">
+              3 dari <span class="summary-highlight">10</span> key aktif
+            </div>
+            <div class="summary-progress">
+              <div class="summary-progress-fill"></div>
+            </div>
+          </div>
+        </header>
+
+        <section class="layout">
+          <!-- LEFT: FORM -->
+          <article>
+            <form id="key-form">
+              <div class="field">
+                <label class="label" for="appName">Nama Aplikasi</label>
+                <input
+                  id="appName"
+                  name="appName"
+                  class="input"
+                  type="text"
+                  placeholder="Contoh: Praktikum7 PWS Service"
+                  required
+                />
+              </div>
+
+              <div class="field">
+                <label class="label" for="description">Deskripsi / Tujuan</label>
+                <input
+                  id="description"
+                  name="description"
+                  class="input"
+                  type="text"
+                  placeholder="Contoh: API key hanya untuk tugas praktikum web service"
+                />
+                <p class="helper">
+                  Deskripsi akan membantu kamu mengingat untuk apa key ini dibuat.
+                </p>
+              </div>
+
+              <div class="inline">
+                <div class="field">
+                  <label class="label" for="expiry">Masa Berlaku</label>
+                  <select id="expiry" name="expiry" class="select">
+                    <option value="1">1 hari</option>
+                    <option value="7" selected>7 hari</option>
+                    <option value="30">30 hari</option>
+                    <option value="90">90 hari</option>
+                    <option value="never">Tidak pernah expired</option>
+                  </select>
+                  <p class="helper">Gunakan <strong>jangka pendek</strong> untuk testing.</p>
+                </div>
+                <div class="field">
+                  <label class="label">Prefix Key</label>
+                  <input
+                    id="prefix"
+                    class="input"
+                    type="text"
+                    placeholder="Contoh: PWS_ atau DEV_"
+                  />
+                  <p class="helper">Opsional. Memudahkan identifikasi key di log.</p>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="label">Scope Akses</div>
+                <div class="pill-row" id="scope-row">
+                  <label class="pill-toggle" data-scope="read" data-active="true">
+                    <input type="checkbox" checked />
+                    <span>read</span>
+                  </label>
+                  <label class="pill-toggle" data-scope="write" data-active="false">
+                    <input type="checkbox" />
+                    <span>write</span>
+                  </label>
+                  <label class="pill-toggle" data-scope="admin" data-active="false">
+                    <input type="checkbox" />
+                    <span>admin</span>
+                  </label>
+                  <label class="pill-toggle" data-scope="analytics" data-active="false">
+                    <input type="checkbox" />
+                    <span>analytics</span>
+                  </label>
+                </div>
+                <p class="helper">
+                  Pilih <strong>scope</strong> yang benar supaya API key tidak terlalu
+                  powerful.
+                </p>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn-primary">
+                  <span class="btn-icon-circle">⚡</span>
+                  <span>Generate API Key</span>
+                </button>
+
+                <button type="button" class="btn-secondary" id="btn-reset">
+                  <span class="btn-icon-circle">↺</span>
+                  Reset form
+                </button>
+
+                <span class="status-text" id="status-text" data-status="">
+                  Menunggu aksi kamu…
+                </span>
+              </div>
+            </form>
+          </article>
+
+          <!-- RIGHT: RESULT -->
+          <aside class="pane-right">
+            <h2>
+              Aktif API Key
+              <span class="chip">Real-time preview</span>
+            </h2>
+
+            <div class="result-box" id="result-box">
+              <div class="result-label">Hasil API Key Terbaru</div>
+              <div class="result-key-row">
+                <div class="result-key" id="result-key">
+                  Belum ada key. Tekan "Generate API Key" untuk memulai.
+                </div>
+                <button class="btn-secondary" type="button" id="btn-copy" disabled>
+                  <span class="btn-icon-circle">⧉</span>
+                  <span>Copy</span>
+                </button>
+              </div>
+              <div class="result-meta">
+                <span id="result-meta-app">Aplikasi: -</span>
+                <span id="result-meta-expiry">Masa berlaku: -</span>
+              </div>
+            </div>
+
+            <div class="activity">
+              <div class="activity-header">
+                <span>Activity log</span>
+                <span style="font-size: 10px; color: var(--text-soft);">log lokal (client-only)</span>
+              </div>
+              <div class="activity-list" id="activity-list">
+                <div class="activity-item">
+                  <div class="activity-dot"></div>
+                  <div>
+                    <span>Belum ada aktivitas. Generate pertama kamu akan muncul di sini.</span>
+                    <time>—</time>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const form = document.getElementById("key-form");
+  const scopeRow = document.getElementById("scope-row");
+  const statusText = document.getElementById("status-text");
+  const resultKeyEl = document.getElementById("result-key");
+  const resultMetaApp = document.getElementById("result-meta-app");
+  const resultMetaExpiry = document.getElementById("result-meta-expiry");
+  const btnCopy = document.getElementById("btn-copy");
+  const btnReset = document.getElementById("btn-reset");
+  const activityList = document.getElementById("activity-list");
+
+  // Toggle scope pill style
+  scopeRow.addEventListener("click", (e) => {
+    const pill = e.target.closest(".pill-toggle");
+    if (!pill) return;
+    const input = pill.querySelector("input");
+    input.checked = !input.checked;
+    pill.dataset.active = input.checked ? "true" : "false";
+  });
+
+  // Helper: add activity log
+  function pushActivity(message, success = true) {
+    const time = new Date().toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    const item = document.createElement("div");
+    item.className = "activity-item" + (success ? " success" : "");
+    item.innerHTML = `
+      <div class="activity-dot"></div>
+      <div>
+        <span>${message}</span>
+        <time>${time}</time>
+      </div>
+    `;
+
+    // Hapus placeholder pertama jika masih ada
+    if (
+      activityList.children.length === 1 &&
+      activityList.children[0].querySelector("time").textContent === "—"
+    ) {
+      activityList.innerHTML = "";
+    }
+
+    activityList.prepend(item);
+
+    // Limit 5 log
+    while (activityList.children.length > 5) {
+      activityList.lastChild.remove();
+    }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    statusText.dataset.status = "";
+    statusText.textContent = "Mengirim permintaan key ke server…";
+
+    const appName = document.getElementById("appName").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const expiry = document.getElementById("expiry").value;
+    const prefixRaw = document.getElementById("prefix").value.trim();
+
+    let prefix = prefixRaw;
+    if (prefix && !prefix.endsWith("_")) {
+      prefix += "_";
+    }
+
+    // Ambil scope yang aktif
+    const scopes = Array.from(
+      scopeRow.querySelectorAll(".pill-toggle input")
+    )
+      .filter((input) => input.checked)
+      .map((input) => input.parentElement.dataset.scope);
+
+    try {
+      // ==========================
+      // PAKAI BACKEND /index.js
+      // ==========================
+      const response = await fetch("/api/generate-key", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ appName, description, expiry, scopes, prefix }),
+      });
+
+      if (!response.ok) {
+        let errorMsg = "Gagal generate key dari server.";
+        try {
+          const errData = await response.json();
+          if (errData && errData.error) errorMsg = errData.error;
+        } catch (_) {}
+        throw new Error(errorMsg);
+      }
+
+      const data = await response.json();
+      // data datang dari index.js → { apiKey, fingerprint, appName, expiry, scopes, ... }
+      const apiKey = data.apiKey;
+
+      // Update UI pakai data dari server
+      resultKeyEl.textContent = apiKey;
+      resultMetaApp.textContent =
+        "Aplikasi: " + (data.appName || appName || "Tidak terdefinisi");
+      resultMetaExpiry.textContent =
+        "Masa berlaku: " +
+        (data.expiry === "never"
+          ? "Tidak kadaluarsa"
+          : data.expiry + " hari");
+
+      btnCopy.disabled = false;
+
+      statusText.dataset.status = "success";
+      statusText.textContent = "API key berhasil dibuat dari server.";
+      pushActivity(
+        `Key baru dari server untuk “${
+          data.appName || appName || "Tanpa nama"
+        }” dengan scope [${(data.scopes || scopes).join(", ")}]`,
+        true
+      );
+    } catch (err) {
+      console.error(err);
+      statusText.dataset.status = "error";
+      statusText.textContent = err.message || "Terjadi kesalahan saat generate API key.";
+      pushActivity("Gagal generate API key dari server.", false);
+    }
+  });
+
+  btnCopy.addEventListener("click", async () => {
+    const key = resultKeyEl.textContent.trim();
+    if (!key || key.startsWith("Belum ada")) return;
+
+    try {
+      await navigator.clipboard.writeText(key);
+      statusText.dataset.status = "success";
+      statusText.textContent = "API key tersalin ke clipboard.";
+      pushActivity("API key terakhir di-copy ke clipboard.", true);
+    } catch (err) {
+      statusText.dataset.status = "error";
+      statusText.textContent = "Gagal menyalin API key.";
+      pushActivity("Gagal menyalin API key.", false);
+    }
+  });
+
+  btnReset.addEventListener("click", () => {
+    form.reset();
+
+    // Reset scope: hanya read yang aktif
+    scopeRow.querySelectorAll(".pill-toggle").forEach((pill) => {
+      const input = pill.querySelector("input");
+      const scope = pill.dataset.scope;
+      input.checked = scope === "read";
+      pill.dataset.active = scope === "read" ? "true" : "false";
+    });
+
+    statusText.dataset.status = "";
+    statusText.textContent = "Form direset. Siap generate key baru.";
+  });
+</script>
+</body>
+</html>

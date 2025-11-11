@@ -20,7 +20,7 @@ const db = mysql.createPool({
   host: 'localhost',
   port: 3307,
   user: 'root',               // ganti sesuai user MySQL kamu
-  password: '1234567',               // ganti password MySQL kamu
+  password: '1234567',        // ganti password MySQL kamu
   database: 'praktikum7_pws', // ganti sesuai nama DB yang kamu pakai
 });
 
